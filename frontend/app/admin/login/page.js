@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
-import { Lock, User, LogIn, ShieldAlert, GraduationCap, XCircle } from 'lucide-react';
+import { Lock, User, LogIn, ShieldAlert, GraduationCap, XCircle, ShieldCheck } from 'lucide-react';
 
 export default function AdminLogin() {
     const [username, setUsername] = useState('');
@@ -118,4 +118,3 @@ export default function AdminLogin() {
     );
 }
 
-import { ShieldCheck } from 'lucide-react';

@@ -25,6 +25,12 @@ export default function AdminDashboard() {
     const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
 
+    const extractDailymotionId = (input) => {
+        if (!input) return '';
+        const match = input.match(/(?:dailymotion\.com(?:\/video|\/embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+        return match ? match[1] : input.trim();
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -52,9 +58,15 @@ export default function AdminDashboard() {
     const handleAdd = async (e) => {
         e.preventDefault();
         try {
+            // Clean Dailymotion ID if activeTab is videos
+            const preparedData = { ...newData };
+            if (activeTab === 'videos' && preparedData.dailymotionId) {
+                preparedData.dailymotionId = extractDailymotionId(preparedData.dailymotionId);
+            }
+
             const res = editMode
-                ? await api.put(`/admin/${activeTab}/${editingId}`, newData)
-                : await api.post(`/admin/${activeTab}`, newData);
+                ? await api.put(`/admin/${activeTab}/${editingId}`, preparedData)
+                : await api.post(`/admin/${activeTab}`, preparedData);
 
             if (activeTab === 'students') setStudents(editMode ? students.map(s => s._id === editingId ? res.data : s) : [res.data, ...students]);
             if (activeTab === 'videos') setVideos(editMode ? videos.map(v => v._id === editingId ? res.data : v) : [res.data, ...videos]);
@@ -151,9 +163,9 @@ export default function AdminDashboard() {
                         { id: 'students', label: 'إدارة الطلاب', icon: Users },
                         { id: 'videos', label: 'المحتوي المرئي', icon: Video },
                         { id: 'exams', label: 'الامتحانات', icon: FileText },
-                        { id: 'results', label: 'نتائج الطلاب', icon: <GraduationCap size={18} /> },
-                        { id: 'free-videos', label: 'فيديوهات اليوتيوب', icon: <PlayCircle size={18} /> },
-                        { id: 'stats', label: 'الإحصائيات', icon: <Layout size={18} /> },
+                        { id: 'results', label: 'نتائج الطلاب', icon: GraduationCap },
+                        { id: 'free-videos', label: 'فيديوهات اليوتيوب', icon: PlayCircle },
+                        { id: 'stats', label: 'الإحصائيات', icon: Layout },
                     ].map((item) => (
                         <button
                             key={item.id}
@@ -163,7 +175,7 @@ export default function AdminDashboard() {
                                     ? 'bg-gold/10 text-gold border border-gold/20'
                                     : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
                         >
-                            {typeof item.icon === 'function' ? <item.icon size={20} /> : item.icon}
+                            <item.icon size={20} />
                             {item.label}
                         </button>
                     ))}

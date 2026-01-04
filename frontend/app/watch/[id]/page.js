@@ -11,6 +11,12 @@ export default function WatchVideo() {
   const [video, setVideo] = useState(null);
   const router = useRouter();
 
+  const extractDailymotionId = (input) => {
+    if (!input) return '';
+    const match = input.match(/(?:dailymotion\.com(?:\/video|\/embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+    return match ? match[1] : input.trim();
+  };
+
   useEffect(() => {
     const fetchVideo = async () => {
       try {
@@ -66,7 +72,7 @@ export default function WatchVideo() {
             >
               <div className="absolute inset-0 bg-black">
                 <iframe
-                  src={`https://www.dailymotion.com/embed/video/${video.dailymotionId}?api=postMessage&autoplay=1&mute=0`}
+                  src={`https://www.dailymotion.com/embed/video/${extractDailymotionId(video.dailymotionId)}?api=postMessage&autoplay=1&mute=0`}
                   allow="autoplay; fullscreen; picture-in-picture"
                   allowFullScreen
                   frameBorder="0"
